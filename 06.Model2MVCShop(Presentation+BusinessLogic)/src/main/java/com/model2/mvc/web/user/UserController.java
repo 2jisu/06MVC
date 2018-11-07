@@ -37,7 +37,7 @@ public class UserController {
 	//==> classpath:config/common.properties  ,  classpath:config/commonservice.xml 참조 할것
 	//==> 아래의 두개를 주석을 풀어 의미를 확인 할것
 	@Value("#{commonProperties['pageUnit']}")
-	//@Value("#{commonProperties['pageUnit'] ?: 3}")
+	//@Value("#{commonProperties['pageUnit'] ?: 3}") :pageunit이 없으면 3으로 set한다
 	int pageUnit;
 	
 	@Value("#{commonProperties['pageSize']}")

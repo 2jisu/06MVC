@@ -50,7 +50,7 @@
 	<select  id="getProductList"  parameterType="search"	resultMap="productSelectMap">
 	  	SELECT *
 	  	FROM (	SELECT inner_table.* , ROWNUM AS row_seq
-	  					FROM		(	SELECT p.*, NVL(t.tran_status_code,'0') AS tran_status_code 
+	  					FROM		(	SELECT p.*, NVL(t.tran_status_code,'0') AS proTranCode
 	  										FROM product p, transaction t WHERE p.prod_no=t.prod_no(+)
 											<if test="searchCondition != null">
 												
@@ -73,7 +73,7 @@
 	 <!-- SQL : SELECT ROW Count -->	 
 	 <select  id="getTotalCount"  parameterType="search"	 resultType="int">
 	  	SELECT COUNT(*)
-	  	FROM(	SELECT p.*, NVL(t.tran_status_code,'0') AS tran_status_code 
+	  	FROM(	SELECT p.*, NVL(t.tran_status_code,'0') AS proTranCode
 	  				FROM product p, transaction t WHERE p.prod_no=t.prod_no(+)
 					<if test="searchCondition != null">
 						
