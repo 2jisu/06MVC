@@ -102,7 +102,7 @@ public class ProductController {
 	}
 	
 	@RequestMapping("/updateProduct.do")
-	public String updateUser( @ModelAttribute("product") Product product , Model model, HttpServletRequest request ) throws Exception{
+	public String updateProduct( @ModelAttribute("product") Product product , Model model, HttpServletRequest request ) throws Exception{
 
 		System.out.println("/updateProduct.do");
 		//Business Logic
