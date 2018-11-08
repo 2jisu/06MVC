@@ -74,7 +74,7 @@ Purchase vo = (Purchase)request.getAttribute("vo");
 		<td bgcolor="D6D6D6" width="1"></td>
 		<td class="ct_write01">
 		
-		${purchase.paymentOption == '1' ? "현금구매":"신용구매"}
+		${purchase.paymentOption == '1  ' ? "현금구매":"신용구매"}
 
 		</td>
 	</tr>

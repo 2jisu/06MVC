@@ -107,52 +107,71 @@ public class PurchaseController {
 		
 		return modelAndView;
 	}
-	/*
+	
 	@RequestMapping("/updatePurchaseView.do")
-	public String updatePurchaseView( @RequestParam("tranNo") int tranNo , Model model ) throws Exception{
+	public ModelAndView updatePurchaseView( @RequestParam("tranNo") int tranNo) throws Exception{
 
 		System.out.println("/updatePurchaseView.do");
 		//Business Logic
 		Purchase purchase = purchaseService.getPurchase(tranNo);
 		// Model 과 View 연결
-		model.addAttribute("purchase", purchase);
 		
-		return "forward:/purchase/updatePurchaseView.jsp";
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("/purchase/updatePurchaseView.jsp");
+		
+		return modelAndView;
 	}
 	
 	@RequestMapping("/updatePurchase.do")
-	public String updatePurchase( @ModelAttribute("purchase") Purchase purchase , Model model, HttpServletRequest request ) throws Exception{
+	public ModelAndView updatePurchase( @ModelAttribute("purchase") Purchase purchase ,  @RequestParam("buyerId") String buyerId, HttpServletRequest request ) throws Exception{
 
 		System.out.println("/updatePurchase.do");
 		//Business Logic
+		purchase.setBuyer(userService.getUser(buyerId));
 		purchaseService.updatePurchase(purchase);
 		
-		return "redirect:/getPurchase.do?tranNo="+purchase.getTranNo();
+		System.out.println(purchase);
+		
+		
+		ModelAndView modelAndView = new ModelAndView();
+		//modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("redirect:/getPurchase.do?tranNo="+purchase.getTranNo());
+		
+		return modelAndView;
 	}
 	
 	@RequestMapping("/updateTranCode.do")
-	public String updateTranCode( @ModelAttribute("purchase") Purchase purchase , Model model, HttpServletRequest request ) throws Exception{
+	public ModelAndView updateTranCode(@RequestParam("prodNo") int ProdNo, @RequestParam("tranCode") String tranCode, HttpServletRequest request ) throws Exception{
 
 		System.out.println("/updateTranCode.do");
 		//Business Logic
-		purchase = purchaseService.getPurchase2(purchase.getPurchaseProd().getProdNo());
-		purchase.setTranCode(purchase.getTranCode());
+		Purchase purchase = purchaseService.getPurchase2(ProdNo);
+		purchase.setTranCode(tranCode);
 		purchaseService.updateTranCode(purchase);
 		
-		return "redirect:/listPurchase.do";
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("redirect:/listPurchase.do");
+		
+		return modelAndView;
 	}
 	
 	@RequestMapping("/updateTranCodeByProd.do")
-	public String updateTranCodeByProd( @ModelAttribute("purchase") Purchase purchase , Model model, HttpServletRequest request ) throws Exception{
+	public ModelAndView updateTranCodeByProd(@RequestParam("prodNo") int ProdNo, @RequestParam("tranCode") String tranCode, HttpServletRequest request ) throws Exception{
 
-		System.out.println("/updateTranCode.do");
+		System.out.println("/updateTranCodeByProd.do");
 		//Business Logic
-		purchase = purchaseService.getPurchase2(purchase.getPurchaseProd().getProdNo());
-		purchase.setTranCode(purchase.getTranCode());
+		Purchase purchase = purchaseService.getPurchase2(ProdNo);
+		purchase.setTranCode(tranCode);
 		purchaseService.updateTranCode(purchase);
 		
-		return "redirect:/listPurchase.do?menu=manage";
-	}*/
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("redirect:/listProduct.do?menu=manage");
+		
+		return modelAndView;
+	}
 	
 	@RequestMapping("/listPurchase.do")
 	public ModelAndView listPurchase( @ModelAttribute("search") Search search , @ModelAttribute("purchase") Purchase purchase , HttpServletRequest request) throws Exception{
@@ -170,6 +189,7 @@ public class PurchaseController {
 
 		// Business logic 수행
 		Map<String , Object> map=purchaseService.getPurchaseList(search, buyerId);
+		System.out.println("map:"+map);
 		
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		System.out.println(resultPage);
