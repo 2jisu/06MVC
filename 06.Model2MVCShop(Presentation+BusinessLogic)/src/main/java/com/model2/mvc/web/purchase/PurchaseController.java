@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
@@ -47,14 +48,22 @@ public class PurchaseController {
 	
 	
 	@RequestMapping("/addPurchaseView.do")
-	public String addPurchaseView() throws Exception {
+	public ModelAndView addPurchaseView(@ModelAttribute("purchase") Purchase purchase, @RequestParam("prod_no") String ProdNo ) throws Exception {
 
 		System.out.println("/addPurchaseView.do");
+		System.out.println("prodNo:"+ProdNo);
+		purchase = purchaseService.getPurchase2(Integer.parseInt(ProdNo));
+		System.out.println("purchase:"+purchase);
 		
-		return "redirect:/purchase/addPurchaseView.jsp";
+		
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("/purchase/addPurchaseView.jsp");
+		
+		return modelAndView;
 	}
 	
-	@RequestMapping("/addPurchase.do")
+	/*@RequestMapping("/addPurchase.do")
 	public String addPurchase( @ModelAttribute("purchase") Purchase purchase ) throws Exception {
 
 		System.out.println("/addPurchase.do");
@@ -146,5 +155,5 @@ public class PurchaseController {
 		model.addAttribute("search", search);
 		
 		return "forward:/purchase/listPurchase.jsp";
-	}
+	}*/
 }
