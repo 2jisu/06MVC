@@ -65,7 +65,18 @@
 													</if>
 											
 											</if>
-											ORDER BY p.prod_no ) inner_table
+											<if test="searchFilter != null">
+												<if test="searchFilter==0">
+													ORDER BY p.prod_no DESC
+												</if>
+												<if test="searchFilter==1">
+													ORDER BY p.price ASC
+												</if>
+												<if test="searchFilter==2">
+													ORDER BY p.price DESC
+												</if>
+											</if>
+											) inner_table
 						WHERE ROWNUM &lt;= #{endRowNum} )
 		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum} 
 	 </select>
