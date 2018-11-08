@@ -39,17 +39,17 @@ Purchase purchase = (Purchase)request.getAttribute("purchase");
 	</tr>
 	<tr>
 		<td>구매자이름</td>
-		<td>${purchase.buyer.userName}</td>
+		<td>${purchase.receiverName}</td>
 		<td></td>
 	</tr>
 	<tr>
 		<td>구매자연락처</td>
-		<td>${purchase.buyer.phone}</td>
+		<td>${purchase.receiverPhone}</td>
 		<td></td>
 	</tr>
 	<tr>
 		<td>구매자주소</td>
-		<td>${purchase.buyer.addr}</td>
+		<td>${purchase.divyAddr}</td>
 		<td></td>
 	</tr>
 		<tr>

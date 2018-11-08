@@ -19,8 +19,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
+import com.model2.mvc.service.domain.Product;
 import com.model2.mvc.service.domain.Purchase;
+import com.model2.mvc.service.domain.User;
+import com.model2.mvc.service.product.ProductService;
 import com.model2.mvc.service.purchase.PurchaseService;
+import com.model2.mvc.service.user.UserService;
 
 
 @Controller
@@ -30,7 +34,14 @@ public class PurchaseController {
 	@Autowired
 	@Qualifier("purchaseServiceImpl")
 	private PurchaseService purchaseService;
-	//setter Method 구현 않음
+	
+	@Autowired
+	@Qualifier("productServiceImpl")
+	private ProductService productService;
+
+	@Autowired
+	@Qualifier("userServiceImpl")
+	private UserService userService;
 		
 	public PurchaseController(){
 		System.out.println(this.getClass());
@@ -48,44 +59,55 @@ public class PurchaseController {
 	
 	
 	@RequestMapping("/addPurchaseView.do")
-	public ModelAndView addPurchaseView(@ModelAttribute("purchase") Purchase purchase, @RequestParam("prod_no") String ProdNo ) throws Exception {
+	public ModelAndView addPurchaseView(@RequestParam("prod_no") int ProdNo,  HttpServletRequest request ) throws Exception {
 
 		System.out.println("/addPurchaseView.do");
 		System.out.println("prodNo:"+ProdNo);
-		purchase = purchaseService.getPurchase2(Integer.parseInt(ProdNo));
-		System.out.println("purchase:"+purchase);
 		
+		Product product = productService.getProduct(ProdNo);
+		System.out.println("product:"+product);
 		
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.addObject("purchase", purchase);
+		modelAndView.addObject("product", product);
 		modelAndView.setViewName("/purchase/addPurchaseView.jsp");
 		
 		return modelAndView;
 	}
 	
-	/*@RequestMapping("/addPurchase.do")
-	public String addPurchase( @ModelAttribute("purchase") Purchase purchase ) throws Exception {
+	@RequestMapping("/addPurchase.do")
+	public ModelAndView addPurchase( @ModelAttribute("purchase") Purchase purchase, @RequestParam("prodNo") int ProdNo, @RequestParam("buyerId") String buyerId  ) throws Exception {
 
 		System.out.println("/addPurchase.do");
 		//Business Logic
-		purchaseService.addPurchase(purchase);
+		purchase.setBuyer(userService.getUser(buyerId));
+		purchase.setPurchaseProd(productService.getProduct(ProdNo));
 		
-		return "forward:/purchase/addPurchase.jsp";
+		purchaseService.addPurchase(purchase);
+		purchase = purchaseService.getPurchase2(ProdNo);
+		
+		
+		ModelAndView modelAndView = new ModelAndView();
+		//modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("/purchase/addPurchase.jsp");
+		
+		return modelAndView;
 	}
 	
 	@RequestMapping("/getPurchase.do")
-	public String getPurchase( @RequestParam("tranNo") int tranNo , Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception {
+	public ModelAndView getPurchase( @RequestParam("tranNo") int tranNo, HttpServletRequest request, HttpServletResponse response ) throws Exception {
 		
 		System.out.println("/getPurchase.do");
 		//Business Logic
 		Purchase purchase = purchaseService.getPurchase(tranNo);
 		// Model 과 View 연결
-		model.addAttribute("purchase", purchase);
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("purchase", purchase);
+		modelAndView.setViewName("/purchase/getPurchase.jsp");
 		
 		
-		return "forward:/purchase/getPurchase.jsp";
+		return modelAndView;
 	}
-	
+	/*
 	@RequestMapping("/updatePurchaseView.do")
 	public String updatePurchaseView( @RequestParam("tranNo") int tranNo , Model model ) throws Exception{
 
@@ -130,10 +152,10 @@ public class PurchaseController {
 		purchaseService.updateTranCode(purchase);
 		
 		return "redirect:/listPurchase.do?menu=manage";
-	}
+	}*/
 	
 	@RequestMapping("/listPurchase.do")
-	public String listPurchase( @ModelAttribute("search") Search search , @ModelAttribute("purchase") Purchase purchase , Model model , HttpServletRequest request) throws Exception{
+	public ModelAndView listPurchase( @ModelAttribute("search") Search search , @ModelAttribute("purchase") Purchase purchase , HttpServletRequest request) throws Exception{
 		
 		System.out.println("/listPurchase.do");
 		
@@ -142,7 +164,10 @@ public class PurchaseController {
 		}
 		search.setPageSize(pageSize);
 		
-		String buyerId = purchase.getBuyer().getUserId();
+		User user = (User)request.getSession().getAttribute("user");
+		String buyerId = user.getUserId();
+		System.out.println("user = "+user+" buyerId="+buyerId);
+
 		// Business logic 수행
 		Map<String , Object> map=purchaseService.getPurchaseList(search, buyerId);
 		
@@ -150,10 +175,11 @@ public class PurchaseController {
 		System.out.println(resultPage);
 		
 		// Model 과 View 연결
-		model.addAttribute("list", map.get("list"));
-		model.addAttribute("resultPage", resultPage);
-		model.addAttribute("search", search);
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.addObject("list", map.get("list"));
+		modelAndView.addObject("resultPage", resultPage);
+		modelAndView.setViewName("/purchase/listPurchase.jsp");
 		
-		return "forward:/purchase/listPurchase.jsp";
-	}*/
+		return modelAndView;
+	}
 }
